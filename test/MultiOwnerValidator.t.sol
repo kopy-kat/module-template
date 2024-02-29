@@ -6,9 +6,10 @@ import {
     RhinestoneModuleKit,
     ModuleKitHelpers,
     ModuleKitUserOp,
-    RhinestoneAccount,
+    AccountInstance,
     UserOpData
 } from "modulekit/ModuleKit.sol";
+import { MODULE_TYPE_VALIDATOR } from "modulekit/external/ERC7579.sol";
 import { MultiOwnerValidator } from "src/MultiOwnerValidator.sol";
 import { ECDSA } from "solady/src/utils/ECDSA.sol";
 
@@ -18,7 +19,7 @@ contract MultiOwnerValidatorTest is RhinestoneModuleKit, Test {
     using ECDSA for bytes32;
 
     // account and modules
-    RhinestoneAccount internal instance;
+    AccountInstance internal instance;
     MultiOwnerValidator internal validator;
 
     Account owner1;
@@ -36,9 +37,13 @@ contract MultiOwnerValidatorTest is RhinestoneModuleKit, Test {
         owner2 = makeAccount("owner2");
 
         // Create the account and install the validator
-        instance = makeRhinestoneAccount("MultiOwnerValidator");
+        instance = makeAccountInstance("MultiOwnerValidator");
         vm.deal(address(instance.account), 10 ether);
-        instance.installValidator(address(validator), abi.encodePacked(owner1.addr));
+        instance.installModule({
+            moduleTypeId: MODULE_TYPE_VALIDATOR,
+            module: address(validator),
+            data: abi.encodePacked(owner1.addr)
+        });
     }
 
     function signHash(uint256 privKey, bytes32 digest) internal returns (bytes memory) {

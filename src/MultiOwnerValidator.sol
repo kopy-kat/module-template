@@ -2,8 +2,7 @@
 pragma solidity ^0.8.23;
 
 import { ERC7579ValidatorBase } from "modulekit/Modules.sol";
-import { UserOperation } from "modulekit/external/ERC4337.sol";
-import { EncodedModuleTypes } from "erc7579/lib/ModuleTypeLib.sol";
+import { PackedUserOperation } from "modulekit/external/ERC4337.sol";
 
 import { SignatureCheckerLib } from "solady/src/utils/SignatureCheckerLib.sol";
 import { ECDSA } from "solady/src/utils/ECDSA.sol";
@@ -61,7 +60,7 @@ contract MultiOwnerValidator is ERC7579ValidatorBase {
      * for more details)
      */
     function validateUserOp(
-        UserOperation calldata userOp,
+        PackedUserOperation calldata userOp,
         bytes32 userOpHash
     )
         external
@@ -154,10 +153,4 @@ contract MultiOwnerValidator is ERC7579ValidatorBase {
     function isModuleType(uint256 typeID) external pure override returns (bool) {
         return typeID == TYPE_VALIDATOR;
     }
-
-    /**
-     * Get the module types
-     * @return moduleTypes The bit-encoded module types
-     */
-    function getModuleTypes() external view returns (EncodedModuleTypes) { }
 }
